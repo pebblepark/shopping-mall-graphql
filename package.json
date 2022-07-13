@@ -10,6 +10,7 @@
   "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-query": "^3.39.1",
     "react-router-dom": "^6.3.0",
     "vite-plugin-next-react-router": "^0.6.2"
   },
