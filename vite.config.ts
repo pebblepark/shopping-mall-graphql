@@ -5,4 +5,9 @@ import { reactRouterPlugin } from 'vite-plugin-next-react-router';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), reactRouterPlugin()],
+  esbuild: {
+    define: {
+      this: 'window',
+    },
+  },
 });
