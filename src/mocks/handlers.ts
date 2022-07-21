@@ -1,6 +1,6 @@
 import { graphql } from 'msw';
 import { v4 as uuid } from 'uuid';
-import GET_PRODUCTS from '../graphql/products';
+import GET_PRODUCTS, { GET_PRODUCT } from '../graphql/products';
 
 const mockProducts = Array.from({ length: 30 }).map((_, i) => ({
   id: uuid(),
@@ -18,5 +18,11 @@ export const handlers = [
         products: mockProducts,
       })
     );
+  }),
+  graphql.query(GET_PRODUCT, (req, res, ctx) => {
+    const { variables } = req;
+    const findProduct = mockProducts.find((item) => item.id === variables.id);
+    if (!findProduct) throw new Error('Cannot find product');
+    return res(ctx.data(findProduct));
   }),
 ];
