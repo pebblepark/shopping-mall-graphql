@@ -1,7 +1,7 @@
 import { gql } from 'graphql-tag';
 
 export type Product = {
-  id: number;
+  id: string;
   imageUrl: string;
   price: number;
   title: string;
