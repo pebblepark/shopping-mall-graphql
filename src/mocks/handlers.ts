@@ -1,6 +1,6 @@
 import { graphql } from 'msw';
 import { v4 as uuid } from 'uuid';
-import { GET_CART, ADD_CART, CartType } from '../graphql/cart';
+import { GET_CART, ADD_CART, CartType, UPDATE_CART } from '../graphql/cart';
 import GET_PRODUCTS, { GET_PRODUCT } from '../graphql/products';
 
 const mockProducts = Array.from({ length: 30 }).map((_, i) => ({
@@ -46,6 +46,24 @@ export const handlers = [
         newData[id] = {
           ...findProduct,
           amount: 1,
+        };
+      }
+    }
+    cartData = newData;
+    return res(ctx.data(newData));
+  }),
+  graphql.mutation(UPDATE_CART, (req, res, ctx) => {
+    const newData = { ...cartData };
+    const { id, amount } = req.variables;
+
+    if (!newData[id]) {
+      throw new Error('해당 아이템을 찾을 수 없습니다.');
+    } else {
+      const findProduct = mockProducts.find((item) => item.id === id);
+      if (findProduct) {
+        newData[id] = {
+          ...findProduct,
+          amount,
         };
       }
     }
