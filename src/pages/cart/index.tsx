@@ -4,8 +4,13 @@ import { CartType, GET_CART } from '../../graphql/cart';
 import { graphqlFetcher, QueryKeys } from '../../queryClient';
 
 const Cart = () => {
-  const { data } = useQuery<CartType[]>(QueryKeys.CART, () =>
-    graphqlFetcher(GET_CART)
+  const { data } = useQuery<CartType[]>(
+    QueryKeys.CART,
+    () => graphqlFetcher(GET_CART),
+    {
+      cacheTime: 1000,
+      staleTime: 0,
+    }
   );
   const cartItems = Object.values(data || {});
 
