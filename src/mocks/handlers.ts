@@ -32,25 +32,20 @@ export const handlers = [
     return res(ctx.data(cartData));
   }),
   graphql.mutation(ADD_CART, (req, res, ctx) => {
-    const newData = { ...cartData };
-    const { id } = req.variables;
+    const newCartData = { ...cartData };
+    const id = req.variables.id;
 
-    if (newData[id]) {
-      newData[id] = {
-        ...newData[id],
-        amount: newData[id].amount + 1,
-      };
-    } else {
-      const findProduct = mockProducts.find((item) => item.id === id);
-      if (findProduct) {
-        newData[id] = {
-          ...findProduct,
-          amount: 1,
-        };
-      }
-    }
-    cartData = newData;
-    return res(ctx.data(newData));
+    const targetProduct = mockProducts.find((item) => item.id === id);
+    if (!targetProduct) throw new Error('상품을 찾을 수 없습니다.');
+
+    const newItem = {
+      ...targetProduct,
+      amount: (newCartData[id]?.amount || 0) + 1,
+    };
+    newCartData[id] = newItem;
+    cartData = newCartData;
+
+    return res(ctx.data(newItem));
   }),
   graphql.mutation(UPDATE_CART, (req, res, ctx) => {
     const newData = { ...cartData };
@@ -58,16 +53,14 @@ export const handlers = [
 
     if (!newData[id]) {
       throw new Error('해당 아이템을 찾을 수 없습니다.');
-    } else {
-      const findProduct = mockProducts.find((item) => item.id === id);
-      if (findProduct) {
-        newData[id] = {
-          ...findProduct,
-          amount,
-        };
-      }
     }
+    const newItem = {
+      ...newData[id],
+      amount,
+    };
+
+    newData[id] = newItem;
     cartData = newData;
-    return res(ctx.data(newData));
+    return res(ctx.data(newItem));
   }),
 ];
