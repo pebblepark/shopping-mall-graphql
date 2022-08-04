@@ -46,8 +46,8 @@ const CartItem = ({ id, imageUrl, price, title, amount }: CartType) => {
 
   return (
     <li className='cart-item'>
-      <img src={imageUrl} />
-      <p className='cart-item__price'>{price}</p>
+      <img className='cart-item__image' src={imageUrl} />
+      <p className='cart-item__price'>${price}</p>
       <p className='cart-item__title'>{title}</p>
       <input
         type='number'

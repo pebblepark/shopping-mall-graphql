@@ -3,7 +3,7 @@ import CartItem from './item';
 
 const CartList = ({ items }: { items: CartType[] }) => {
   return (
-    <ul>
+    <ul className='cart'>
       {items.map((item) => (
         <CartItem {...item} key={item.id} />
       ))}
