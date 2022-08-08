@@ -7,11 +7,12 @@ import {
   UPDATE_CART,
   DELETE_CART,
 } from '../graphql/cart';
+import { EXECUTE_PAY } from '../graphql/payment';
 import GET_PRODUCTS, { GET_PRODUCT } from '../graphql/products';
 
 const mockProducts = Array.from({ length: 30 }).map((_, i) => ({
   id: uuid(),
-  imageUrl: `https://placeimg.com/200/150/${i + 1}`,
+  imageUrl: `https://picsum.photos/id/${i + 1}/200/150`,
   price: 50000,
   title: `임시상품${i + 1}`,
   description: `임시상세내용${i + 1}`,
@@ -74,5 +75,11 @@ export const handlers = [
     delete newData[id];
     cartData = newData;
     return res(ctx.data(id));
+  }),
+  graphql.mutation(EXECUTE_PAY, ({ variables: ids }, res, ctx) => {
+    ids.forEach((id: string) => {
+      delete cartData[id];
+    });
+    return res(ctx.data(ids));
   }),
 ];
