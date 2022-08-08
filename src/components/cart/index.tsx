@@ -3,8 +3,10 @@ import { useRecoilState } from 'recoil';
 import { CartType } from '../../graphql/cart';
 import { checkedCartState } from '../../recoils/cart';
 import CartItem from './item';
-import WillPay from './willPay';
+import WillPay from '../willPay/willPay';
+import { useNavigate } from 'react-router-dom';
 const CartList = ({ items }: { items: CartType[] }) => {
+  const navigate = useNavigate();
   const [checkedCartData, setCheckedCartData] =
     useRecoilState(checkedCartState);
   const [formData, setFormData] = useState<FormData>();
@@ -44,6 +46,15 @@ const CartList = ({ items }: { items: CartType[] }) => {
     setFormData(data);
   };
 
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    if (checkedCartData.length) {
+      navigate('/payment');
+    } else {
+      alert('결제할 대상이 없어요');
+    }
+  };
+
   useEffect(() => {
     checkedCartData.forEach((item) => {
       const itemRef = checkboxRefs.find(
@@ -74,7 +85,7 @@ const CartList = ({ items }: { items: CartType[] }) => {
           <CartItem {...item} key={item.id} ref={checkboxRefs[i]} />
         ))}
       </ul>
-      <WillPay />
+      <WillPay submitTitle='결제창으로' handleSubmit={handleSubmit} />
     </form>
   );
 };
