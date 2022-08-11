@@ -1,28 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import ProductList from '../../components/product/list';
 import GET_PRODUCTS, { Products } from '../../graphql/products';
+import useIntersection from '../../hooks/useIntersection';
 import { graphqlFetcher, QueryKeys } from '../../queryClient';
 
 const ProductListPage = () => {
-  const observerRef = useRef<IntersectionObserver>();
   const fetchMoreRef = useRef<HTMLDivElement>(null);
-  const [intersecting, setIntersecting] = useState(false);
-
-  const getObserver = useCallback(() => {
-    if (!observerRef.current) {
-      observerRef.current = new IntersectionObserver((entries) => {
-        console.log(entries);
-        setIntersecting(entries[0]?.isIntersecting);
-      });
-
-      return observerRef.current;
-    }
-  }, [observerRef.current]);
-
-  useEffect(() => {
-    if (fetchMoreRef.current) getObserver()?.observe(fetchMoreRef.current);
-  }, [fetchMoreRef.current]);
+  const intersecting = useIntersection(fetchMoreRef);
 
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isSuccess } =
     useInfiniteQuery<Products>(
@@ -30,22 +15,11 @@ const ProductListPage = () => {
       ({ pageParam = '' }) =>
         graphqlFetcher(GET_PRODUCTS, { cursor: pageParam }),
       {
-        getNextPageParam: (lastPage, allPages) => {
+        getNextPageParam: (lastPage) => {
           return lastPage.products.at(-1)?.id;
         },
       }
     );
-
-  /*
-  data: {
-    pages: [
-      { products: [...] },
-      { products: [...] },
-      { products: [...] },
-    ],
-    pageParams: [undefined, ...]
-  }
-  */
 
   useEffect(() => {
     if (!intersecting || !isSuccess || !hasNextPage || isFetchingNextPage)
