@@ -4,7 +4,6 @@ const Gnb = () => {
   return (
     <nav className='gnb'>
       <ul>
-        {' '}
         <li>
           <Link to='/'>홈</Link>
         </li>
@@ -13,6 +12,9 @@ const Gnb = () => {
         </li>
         <li>
           <Link to='/cart'>장바구니</Link>
+        </li>
+        <li>
+          <Link to='/admin'>어드민</Link>
         </li>
       </ul>
     </nav>

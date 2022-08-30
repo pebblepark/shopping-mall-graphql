@@ -11,7 +11,7 @@ const ProductListPage = () => {
 
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isSuccess } =
     useInfiniteQuery<Products>(
-      QueryKeys.PRODUCTS,
+      [QueryKeys.PRODUCTS, false],
       ({ pageParam = '' }) =>
         graphqlFetcher(GET_PRODUCTS, { cursor: pageParam }),
       {
