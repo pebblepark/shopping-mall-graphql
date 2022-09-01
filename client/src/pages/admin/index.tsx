@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useInfiniteQuery } from 'react-query';
+import AddForm from '../../components/admin/addForm';
 import AdminItem from '../../components/admin/item';
 import ProductList from '../../components/product/list';
 import GET_PRODUCTS, { Products } from '../../graphql/products';
@@ -31,6 +32,7 @@ const AdminPage = () => {
   return (
     <div>
       <h2>어드민</h2>
+      <AddForm />
       <ProductList list={data?.pages || []} Item={AdminItem} />
       <div ref={fetchMoreRef} />
     </div>
