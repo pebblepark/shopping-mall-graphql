@@ -13,7 +13,7 @@ const AdminPage = () => {
 
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isSuccess } =
     useInfiniteQuery<Products>(
-      [QueryKeys.PRODUCTS, true],
+      [QueryKeys.PRODUCTS, 'admin'],
       ({ pageParam = '' }) =>
         graphqlFetcher(GET_PRODUCTS, { cursor: pageParam, showDeleted: true }),
       {

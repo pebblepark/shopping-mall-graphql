@@ -1,6 +1,6 @@
 import { SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
-import { ADD_PROUDCT, Product } from '../../graphql/products';
+import { ADD_PROUDCT, Product, Products } from '../../graphql/products';
 import { graphqlFetcher, QueryKeys } from '../../queryClient';
 import arrToObj from '../../util/arrToObj';
 
@@ -12,9 +12,38 @@ const AddForm = () => {
     ({ title, imageUrl, price, description }: OmittedProduct) =>
       graphqlFetcher(ADD_PROUDCT, { title, imageUrl, price, description }),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(QueryKeys.PRODUCTS, {
-          refetchInactive: true,
+      onSuccess: ({ addProduct }) => {
+        const adminData = queryClient.getQueriesData<{
+          pageParams: (number | undefined)[];
+          pages: Products[];
+        }>([QueryKeys.PRODUCTS, 'admin']);
+
+        const [adminKey, { pageParams: adminParams, pages: adminPages }] =
+          adminData[0];
+        const newAdminPages = [...adminPages];
+        newAdminPages[0].products = [addProduct, ...newAdminPages[0].products];
+        queryClient.setQueriesData(adminKey, {
+          pageParams: adminParams,
+          pages: newAdminPages,
+        });
+
+        const productsData = queryClient.getQueriesData<{
+          pageParams: (number | undefined)[];
+          pages: Products[];
+        }>([QueryKeys.PRODUCTS, 'products']);
+
+        const [
+          productsKey,
+          { pageParams: productsParams, pages: productsPages },
+        ] = productsData[0];
+        const newProductsPages = [...productsPages];
+        newProductsPages[0].products = [
+          addProduct,
+          ...newProductsPages[0].products,
+        ];
+        queryClient.setQueriesData(productsKey, {
+          pageParams: productsParams,
+          pages: newProductsPages,
         });
       },
     }
