@@ -1,15 +1,12 @@
 import { Product } from '../../graphql/products';
+import ProductItem from './Item';
 
-const ProductList = ({
-  list,
-  Item,
-}: {
-  list: { products: Product[] }[];
-  Item: ({ id, imageUrl, price, title }: Product) => JSX.Element;
-}) => (
+const ProductList = ({ list }: { list: { products: Product[] }[] }) => (
   <ul className='products'>
     {list.map((page) =>
-      page.products.map((product) => <Item {...product} key={product.id} />)
+      page.products.map((product) => (
+        <ProductItem {...product} key={product.id} />
+      ))
     )}
   </ul>
 );
