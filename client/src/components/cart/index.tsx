@@ -3,7 +3,7 @@ import { useRecoilState } from 'recoil';
 import { CartType } from '../../graphql/cart';
 import { checkedCartState } from '../../recoils/cart';
 import CartItem from './item';
-import WillPay from '../willPay/willPay';
+import WillPay from '../willPay';
 import { useNavigate } from 'react-router-dom';
 const CartList = ({ items }: { items: CartType[] }) => {
   const navigate = useNavigate();
@@ -14,21 +14,25 @@ const CartList = ({ items }: { items: CartType[] }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const checkboxRefs = items.map(() => createRef<HTMLInputElement>());
 
+  const enabledItems = items.filter((item) => item.product.createdAt);
+
   const setAllCheckedFromItems = () => {
     // 개별 아이템 선택시
     if (!formRef.current) return;
     const data = new FormData(formRef.current);
     const selectedCount = data.getAll('select-item').length;
-    const allChecked = selectedCount === items.length;
+    const allChecked = selectedCount === enabledItems.length;
     formRef.current.querySelector<HTMLInputElement>('.select-all')!.checked =
       allChecked;
   };
 
   const setItemCheckedFormAll = (targetInput: HTMLInputElement) => {
     const allChecked = targetInput.checked;
-    checkboxRefs.forEach((inputElem) => {
-      inputElem.current!.checked = allChecked;
-    });
+    checkboxRefs
+      .filter((inputElem) => !inputElem.current!.disabled)
+      .forEach((inputElem) => {
+        inputElem.current!.checked = allChecked;
+      });
   };
 
   const handleCheckboxChanged = (e?: SyntheticEvent) => {
@@ -57,9 +61,9 @@ const CartList = ({ items }: { items: CartType[] }) => {
 
   useEffect(() => {
     checkedCartData.forEach((item) => {
-      const itemRef = checkboxRefs.find(
-        (ref) => ref.current!.dataset.id === item.id
-      );
+      const itemRef = checkboxRefs
+        .filter((inputElem) => !inputElem.current!.disabled)
+        .find((ref) => ref.current!.dataset.id === item.id);
       if (itemRef) itemRef.current!.checked = true;
       setAllCheckedFromItems();
     });

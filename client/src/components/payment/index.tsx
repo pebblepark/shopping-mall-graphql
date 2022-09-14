@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import { EXECUTE_PAY } from '../../graphql/payment';
 import { graphqlFetcher } from '../../queryClient';
 import { checkedCartState } from '../../recoils/cart';
-import WillPay from '../willPay/willPay';
+import WillPay from '../willPay';
 import PaymentModal from './modal';
 
 type PayInfos = string[];
@@ -16,8 +16,14 @@ const Payment = () => {
     useRecoilState(checkedCartState);
   const [modalShown, toggleModal] = useState(false);
 
-  const { mutate: executePay } = useMutation((ids: PayInfos) =>
-    graphqlFetcher(EXECUTE_PAY, { ids })
+  const { mutate: executePay } = useMutation(
+    (ids: PayInfos) => graphqlFetcher(EXECUTE_PAY, { ids }),
+    {
+      onError: (e) => {
+        alert('결제에 실패하였습니다.');
+        navigate('/cart');
+      },
+    }
   );
 
   const showModal = () => {

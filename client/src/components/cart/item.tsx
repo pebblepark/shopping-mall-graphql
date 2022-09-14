@@ -1,11 +1,11 @@
-import { ForwardedRef, forwardRef, SyntheticEvent } from 'react';
+import { ForwardedRef, forwardRef, SyntheticEvent, useEffect } from 'react';
 import { useMutation } from 'react-query';
 import { CartType, DELETE_CART, UPDATE_CART } from '../../graphql/cart';
 import { getClient, graphqlFetcher, QueryKeys } from '../../queryClient';
 import ItemData from './itemData';
 
 const CartItem = (
-  { id, product: { imageUrl, price, title }, amount }: CartType,
+  { id, product: { imageUrl, price, title, createdAt }, amount }: CartType,
   ref: ForwardedRef<HTMLInputElement>
 ) => {
   const queryClient = getClient();
@@ -72,14 +72,19 @@ const CartItem = (
         name={`select-item`}
         ref={ref}
         data-id={id}
+        disabled={!createdAt}
       />
       <ItemData imageUrl={imageUrl} price={price} title={title} />
-      <input
-        type='number'
-        className='cart-item__amount'
-        value={amount}
-        onChange={handleUpdateAmount}
-      />
+      {!createdAt ? (
+        <div>삭제된 상품입니다.</div>
+      ) : (
+        <input
+          type='number'
+          className='cart-item__amount'
+          value={amount}
+          onChange={handleUpdateAmount}
+        />
+      )}
       <button
         className='cart-item__button'
         type='button'

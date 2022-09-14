@@ -59,9 +59,28 @@ const cartResolver: Resolver = {
       return id;
     },
     executePay: (parent, { ids }, { db }) => {
+      const selectedCartData = db.cart.filter((cartItem) =>
+        ids.includes(cartItem.id)
+      );
+      const deletedProducts = selectedCartData.filter((item) => {
+        const product = db.products.find((products) => products.id === item.id);
+        return !product?.createdAt;
+      });
+
+      if (deletedProducts.length > 0) {
+        deletedProducts.forEach((product) => {
+          const existCartIndex = db.cart.findIndex(
+            (item) => item.id === product.id
+          );
+          db.cart.splice(existCartIndex, 1);
+          setJSON(db.cart);
+        });
+        throw new Error('삭제된 상품이 포함되어 결제를 진행할 수 없습니다.');
+      }
       const newCartData = db.cart.filter(
         (cartItem) => !ids.includes(cartItem.id)
       );
+
       db.cart = newCartData;
       setJSON(db.cart);
       return ids;
